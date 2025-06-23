@@ -1,4 +1,5 @@
 import logging
+
 import curlify
 from requests import Session
 
@@ -10,8 +11,8 @@ class BaseSession(Session):
 
     def request(self, method, url, **kwargs):
         url = self.base_url + url
-
+        logging.info(url)
         response = super().request(method, url, **kwargs)
         curl = curlify.to_curl(response.request)
         logging.info(curlify.to_curl(response.request))
-        return
+        return response
