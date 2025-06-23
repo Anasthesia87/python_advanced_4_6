@@ -4,6 +4,11 @@ from pathlib import Path
 import dotenv
 import pytest
 from sqlmodel import Session, select, SQLModel
+
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent.parent))
 from app.database import engine
 import requests
 from app.models.User import UserData
