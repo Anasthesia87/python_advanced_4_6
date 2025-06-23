@@ -1,7 +1,7 @@
 from http import HTTPStatus
 
 import pytest
-from service_tests.models.reqres import Reqres
+from models.reqres import Reqres
 
 
 @pytest.mark.parametrize("user_id", [13])

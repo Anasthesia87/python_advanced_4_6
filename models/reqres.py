@@ -1,5 +1,5 @@
 from config import Server
-from service_tests.utils.base_session import BaseSession
+from utils.base_session import BaseSession
 
 
 class User:
