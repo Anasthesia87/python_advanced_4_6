@@ -1,13 +1,12 @@
 import json
-from http import HTTPStatus
 from pathlib import Path
 
 import dotenv
 import pytest
 from sqlmodel import Session, select, SQLModel
-from app.database.engine import engine
+from service_tests.app.database import engine
 import requests
-from app.models.User import UserData
+from service_tests.app.models.User import UserData
 import os
 import shutil
 

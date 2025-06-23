@@ -1,8 +1,6 @@
 from http import HTTPStatus
 
 import pytest
-import requests
-from app.models.User import UserData
 from service_tests.models.reqres import Reqres
 
 
