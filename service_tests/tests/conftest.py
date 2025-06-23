@@ -1,5 +1,6 @@
 import json
 from http import HTTPStatus
+from pathlib import Path
 
 import dotenv
 import pytest
@@ -127,16 +128,14 @@ def clear_database():
 
 
 @pytest.fixture(scope="module")
-def fill_test_data(base_url, clear_database):
+def fill_test_data(reqresin, clear_database):
     clear_database
-    with open("tests/users.json") as f:
+    with open(Path(__file__).parent.parent.parent.joinpath("users.json").absolute()) as f:
         test_data_users = json.load(f)
     api_users = []
     for user in test_data_users:
-        response = requests.post(f"{base_url}/api/users/", json=user)
-        api_users.append(response.json())
-
-    user_ids = [user["id"] for user in api_users]
+        api_users.append(UserData(**reqresin.post(f"/api/users", json=user).json()))
+    user_ids = [user.id for user in api_users]
 
     yield user_ids
 
@@ -145,10 +144,10 @@ def fill_test_data(base_url, clear_database):
 
 
 @pytest.fixture
-def users(base_url):
-    response = requests.get(f"{base_url}/api/users/")
-    assert response.status_code == HTTPStatus.OK
+def users(reqresin):
+    response = reqresin.get("/api/users/")
     return response.json()
+
 
 def pytest_addoption(parser):
     parser.addoption("--env", default="dev")
