@@ -4,9 +4,9 @@ from pathlib import Path
 import dotenv
 import pytest
 from sqlmodel import Session, select, SQLModel
-from service_tests.app.database import engine
+from app.database import engine
 import requests
-from service_tests.app.models.User import UserData
+from app.models.User import UserData
 import os
 import shutil
 
