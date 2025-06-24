@@ -12,6 +12,10 @@ psycopg2-binary
 sqlalchemy
 sqlmodel
 fastapi[standard]
-curlify
-voluptuous
-pytest-voluptuous
+
+
+
+
+
+
+

@@ -1,19 +1,17 @@
 import json
-from pathlib import Path
+from http import HTTPStatus
+import time
+
+from app.models.UserService import UserService
+from utils.base_session import BaseSession
+from config import Server
 
 import dotenv
 import pytest
 from sqlmodel import Session, select, SQLModel
-
-import sys
-from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).parent.parent))
-from app.database import engine
-import requests
+from app.database.engine import engine
 from app.models.User import UserData
-import os
-import shutil
+import logging
 
 BASE_URL = "http://127.0.0.1:8002"
 
@@ -131,40 +129,42 @@ def clear_database():
         session.commit()
 
 
-@pytest.fixture(scope="module")
-def fill_test_data(reqresin, clear_database):
+@pytest.fixture(scope="class")
+def fill_test_data(env, clear_database):
     clear_database
-    with open(Path(__file__).parent.parent.parent.joinpath("users.json").absolute()) as f:
+    with open("tests/users.json") as f:
         test_data_users = json.load(f)
     api_users = []
     for user in test_data_users:
-        api_users.append(UserData(**reqresin.post(f"/api/users", json=user).json()))
-    user_ids = [user.id for user in api_users]
+        response = UserService(env).create_user(user)
+        api_users.append(response.json())
 
-    yield user_ids
+    print(api_users)
+    yield api_users
 
-    for user_id in user_ids:
-        requests.delete(f"{base_url}/api/users/{user_id}")
+    for user in api_users:
+        response = UserService(env).delete_user(user['id'])
 
 
 @pytest.fixture
-def users(reqresin):
-    response = reqresin.get("/api/users/")
+def users(env):
+    response = UserService(env).get_users()
+    assert response.status_code == HTTPStatus.OK
     return response.json()
-
 
 def pytest_addoption(parser):
     parser.addoption("--env", default="dev")
-
+    logging.info("parser")
 
 @pytest.fixture(scope="session")
 def env(request):
-    return request.config.getoption("--env")
+    e = request.config.getoption("--env", default="dev")
+    logging.info(f"env : {e}")
+    return e
 
-@pytest.fixture(scope='session', autouse=True)
-def clean_allure_results():
-    allure_dir = 'allure-results'
-    if os.path.exists(allure_dir):
-        shutil.rmtree(allure_dir)
-        print(f"Директория '{allure_dir}' очищена.")
-    os.makedirs(allure_dir, exist_ok=True)
+@pytest.fixture(scope='session')
+def servicein(env):
+    print(f"🔍 Передаём в Server: {env}")
+    time.sleep(10)
+    with BaseSession(base_url=Server(env).service) as session:
+        yield session
