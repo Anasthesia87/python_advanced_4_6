@@ -27,6 +27,7 @@ def base_url():
 
 @pytest.fixture(scope="session", autouse=True)
 def create_tables():
+    print(f"Пытаюсь подключиться к БД: {engine.url}")
     SQLModel.metadata.create_all(engine)
 
 @pytest.fixture
