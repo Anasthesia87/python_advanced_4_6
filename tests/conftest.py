@@ -165,6 +165,6 @@ def env(request):
 @pytest.fixture(scope='session')
 def servicein(env):
     print(f"🔍 Передаём в Server: {env}")
-    time.sleep(10)
+    time.sleep(5)
     with BaseSession(base_url=Server(env).service) as session:
         yield session
