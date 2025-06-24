@@ -21,10 +21,6 @@ def envs():
     dotenv.load_dotenv()
 
 
-@pytest.fixture(scope="session")
-def base_url():
-    return BASE_URL
-
 @pytest.fixture(scope="session", autouse=True)
 def create_tables():
     print(f"Пытаюсь подключиться к БД: {engine.url}")
