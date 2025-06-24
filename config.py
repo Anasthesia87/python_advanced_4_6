@@ -2,7 +2,7 @@
 class Server:
     def __init__(self, env):
         self.service = {
-            "dev": "http://localhost:8002",
+            "dev": "http://localhost:8000/api/v1",
             "beta": "",
             "rc": "",
         }[env]
