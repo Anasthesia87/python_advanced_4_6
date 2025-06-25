@@ -9,8 +9,11 @@ class UserService:
     def __init__(self, env):
         self.session = BaseSession(base_url=Server(env).service)
 
-    def get_users(self, page, size):
-        return self.session.get(f"users/?page={page}&size={size}")
+    def get_status(self):
+        return self.session.get(f"status")
+
+    def get_users(self):
+        return self.session.get(f"users")
 
     def get_user_id(self, user_id: int):
         return self.session.get(f"users/{user_id}")

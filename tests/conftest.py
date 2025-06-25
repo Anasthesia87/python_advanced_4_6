@@ -1,6 +1,7 @@
 import json
 from http import HTTPStatus
 import time
+from pathlib import Path
 
 from app.models.UserService import UserService
 from utils.base_session import BaseSession
@@ -23,8 +24,9 @@ def envs():
 
 @pytest.fixture(scope="session", autouse=True)
 def create_tables():
-    print(f"Пытаюсь подключиться к БД: {engine.url}")
+    # print(f"Пытаюсь подключиться к БД: {engine.url}")
     SQLModel.metadata.create_all(engine)
+
 
 @pytest.fixture
 def test_data_users():
@@ -127,11 +129,11 @@ def clear_database():
 
 
 @pytest.fixture(scope="class")
-def fill_test_data(env, clear_database):
-    clear_database
-    with open("tests/users.json") as f:
+def fill_test_data(env):
+    file_path = Path(__file__).parent / "users.json"
+    with open(file_path) as f:
         test_data_users = json.load(f)
-    api_users = []
+        api_users = []
     for user in test_data_users:
         response = UserService(env).create_user(user)
         api_users.append(response.json())
@@ -149,9 +151,11 @@ def users(env):
     assert response.status_code == HTTPStatus.OK
     return response.json()
 
+
 def pytest_addoption(parser):
     parser.addoption("--env", default="dev")
     logging.info("parser")
+
 
 @pytest.fixture(scope="session")
 def env(request):
@@ -159,9 +163,10 @@ def env(request):
     logging.info(f"env : {e}")
     return e
 
+
 @pytest.fixture(scope='session')
 def servicein(env):
-    print(f"🔍 Передаём в Server: {env}")
+    print(f"Передаём в Server: {env}")
     time.sleep(5)
     with BaseSession(base_url=Server(env).service) as session:
         yield session
